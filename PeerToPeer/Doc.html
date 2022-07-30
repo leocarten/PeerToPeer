@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Doc.css">
+  </head>
+  <body class="container" style="padding-top: 5%;">
+
+    <h2 style="color:black">Elrond Apes Blockchain Explorer</h2>
+    <h4>Search wallet addresses to see peer-to-peer transactions</h4>
+
+    <hr class="line">
+
+    <div class="row">
+      <div class="column">
+        <label>Wallet address <i class="fa fa-address-card"></i></label>
+        <input type="text" id="myInput" class="placeHolderText" placeholder="Please enter an ERD address..." />
+      </div>
+      <div class="column">
+        <br>
+        <button onclick="myFunction()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Search Address <i style="font-size: 12px" class='fa fa-search'></i></button>
+      </div>
+      <div class="column">
+        <label>Get an address from HeroTag <i class="fa fa-bolt"></i></label>
+        <input type="text" id= "myInput1" class="placeHolderText" placeholder="Please enter a HeroTag..." />
+      </div>
+      <div class="column">
+        <br>
+        <button onclick="getHeroTag()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Get HeroTag <i style="font-size: 12px" class='fa fa-search'></i></button>
+      </div>
+    </div>
+
+    <hr class="line">
+    <br>
+    <p id="demo1" class="centered"></p>
+
+    <p id="hero" class="centered"></p>
+
+    <script>
+      //hero tag function
+    function getHeroTag(){
+      document.getElementById("demo1").innerHTML="Processing request <i style='color:black; font-size:20px' class = 'fa fa-refresh fa-spin'></i> Please allow up to 10 seconds per request";  
+  
+  
+      var copyText = document.getElementById("myInput1");
+      navigator.clipboard.writeText(copyText.value);
+      var address = String(copyText.value);
+      console.log(copyText.value)
+      async function findHT(){
+        const ErdEndpointURL = "https://api.elrond.com/usernames/"+copyText.value;
+        const responce = await fetch(ErdEndpointURL);
+        const checker = responce.status
+        const data = await responce.json();
+        var HT = data.address
+        if (checker===404){
+          document.getElementById("hero").innerHTML="Sorry, this HeroTag does not exist"
+          document.getElementById("demo1").innerHTML=""; 
+        }
+        else{
+          document.getElementById("hero").innerHTML=HT+" - Please add copy icon"
+          document.getElementById("demo1").innerHTML="";  
+        }
+
+        
+  
+      }
+      findHT()
+
+    }
+  </script>
+
+
+    <script>
+      // peer to peer tx function
+
+function myFunction() {
+  var copyText = document.getElementById("myInput");
+
+  navigator.clipboard.writeText(copyText.value);
+
+  var address = String(copyText.value);
+  console.log(address)
+
+  if (address.includes('qqqqqq') || !address.includes('erd') ){
+    alert("Please only request wallet addresses. Not smart contracts or transaction hashes.")
+  }
+
+  else{
+    console.log(`Made with ${'❤️'} by TheChosenOne`)
+    document.getElementById("demo1").innerHTML="Processing request <i style='color:black; font-size:20px' class = 'fa fa-refresh fa-spin'></i> Please allow up to 5 seconds per request";  
+
+
+    var table = document.getElementById("myTable");
+
+    var tableHeading = ""
+        document.getElementById("tableHeading").innerHTML=tableHeading;
+
+
+        var row = ""
+        table.innerHTML = row;
+    
+
+
+
+    async function FindNftTransfers(){
+      const ErdEndpointURL = "https://api.elrond.com/accounts/"+copyText.value+"/transactions?size=1000";
+      const responce = await fetch(ErdEndpointURL);
+      const data = await responce.json();
+      var counter = 0;
+
+      var emptyTxHashArray = [];
+
+      var emptySenderArray = [];
+
+      var emptyRecArray = [];
+
+      var TestArray = [];
+
+      var emptyTimeStampArray = [];
+
+      var emptyIdArray = [];
+
+      
+      var theLength = data.length; 
+      
+
+        while (counter<theLength){
+
+          var numberOne = data[counter].txHash;
+          var numberTwo = data[counter].receiver;
+          var numberThree = data[counter].sender;
+
+          var emptyPeerToPeerArray = []
+          var definedVariables = []
+
+        
+          if (!data[counter].sender.includes('qqqqqqqq') && !data[counter].receiver.includes('qqqqqqqq')){  //&& data[counter].sender != data[counter].receiver){
+
+
+
+
+            var DataKeys = Object.keys(data[counter])
+
+
+            if (DataKeys.includes("action")){
+              
+              var ValueKey = Object.values(data[counter])
+              var LengthOfValues = ValueKey.length
+              var Index = ValueKey[LengthOfValues-1]
+
+              var DataKeysFromCategory = Object.keys(Index)
+
+
+              if (Index.category === "esdtNft"){
+                var Arguments = Index.arguments
+                var FurtherArgument = Arguments.transfers
+                var FarthestArg = FurtherArgument[0]
+                if(FarthestArg.collection=="EAPES-8f3c1f"){
+                  var RealRec = Arguments.receiver
+                  var RealSender = data[counter].sender
+                  if(!RealRec.includes('qqqqqq') && RealRec!=data[counter].sender){
+
+                    if(RealRec!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4"&&RealSender!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4"){
+
+                    var Identifier = FarthestArg.identifier
+                    emptyIdArray.push(Identifier)
+
+
+                    console.log("Hash: ",data[counter].txHash)
+                    emptyTxHashArray.push(data[counter].txHash)
+
+                    console.log("To: ",RealRec)
+                    emptyRecArray.push(RealRec)
+                    
+
+                    console.log("From: ",data[counter].sender)
+                    emptySenderArray.push(data[counter].sender)
+
+                    var TimeStamp = data[counter].timestamp
+                    var newTime = new Date(TimeStamp*1000)
+                    var BestTimeStamp = newTime.toUTCString()
+                    var OfficialDay = BestTimeStamp.slice(5,17)
+                    emptyTimeStampArray.push(OfficialDay)
+
+                    }
+
+                  }
+
+                }
+
+              }
+
+            }
+    
+            counter=counter+1
+
+        }
+          else{
+            counter=counter+1;
+        }
+
+
+      }
+
+      var table = document.getElementById("myTable");
+      
+      for (var newCounter = 0; newCounter < emptyTxHashArray.length; newCounter++){
+        var StartSlice = emptyTxHashArray[newCounter].slice(0,10)
+        var Dots = "..."
+        var EndSlice = emptyTxHashArray[newCounter].slice(emptyTxHashArray[newCounter].length - 10)
+
+        var StartSlice1 = emptySenderArray[newCounter].slice(0,10)
+        var EndSlice1 = emptySenderArray[newCounter].slice(emptySenderArray[newCounter].length - 10)
+
+        var StartSlice2 = emptyRecArray[newCounter].slice(0,10)
+        var EndSlice2 = emptyRecArray[newCounter].slice(emptyRecArray[newCounter].length - 10)
+
+        var tableHeading = `
+        <th style="color:black; background-color:#D5DBDB; padding:10px; border-radius: 10px !important;">Tx Hash</th>
+        <th style="color:black; background-color:#D5DBDB; border-radius: 10px !important;">Tx Date</th>
+        <th style="color:black; background-color:#D5DBDB; border-radius: 10px !important;">Sender</th>
+        <th style="color:black; background-color:#D5DBDB; border-radius: 10px !important;">Reciever</th>
+        <th style="color:black; background-color:#D5DBDB; border-radius: 10px !important;">EA NFT</th>
+        `
+        document.getElementById("tableHeading").innerHTML=tableHeading;
+
+
+        var row = `
+        <tr>
+          <td style='padding:10px'><a href=https://explorer.elrond.com/transactions/${emptyTxHashArray[newCounter]} target=_blank>${StartSlice+Dots+EndSlice}</a></td>
+          <td>${emptyTimeStampArray[newCounter]}</td>
+
+          <td><a href=https://explorer.elrond.com/accounts/${emptySenderArray[newCounter]} target=_blank>${StartSlice1+Dots+EndSlice1}</a></td>
+          <td><a href=https://explorer.elrond.com/accounts/${emptyRecArray[newCounter]} target=_blank>${StartSlice2+Dots+EndSlice2}</a></td>
+          <td><a href=https://deadrare.io/nft/${emptyIdArray[newCounter]} target=_blank>${emptyIdArray[newCounter]}</a></td>
+
+
+        </tr>
+        `
+        table.innerHTML += row;
+      }
+
+      if (emptyIdArray.length>0){
+        document.getElementById("demo1").innerHTML="This account has performed "+emptyIdArray.length+" peer-to-peer transactions <i class='fa fa-close' style='color:red'></i>";  
+      }
+      else{
+        document.getElementById("demo1").innerHTML="This account has performed 0 peer-to-peer transactions <i class='fa fa-check' style='color:green'></i>";  
+      }
+
+    }
+    FindNftTransfers();
+
+  
+    
+  }
+       
+}
+
+    </script>
+   
+
+
+
+    <!--<div style="padding: 20px; border: 1px solid black; border-radius: 10px; background-color: #F2F3F4;">-->
+
+    <div>
+      <table style="border-collapse: separate; border-radius: 10px !important; border: 1px solid #616A6B  ; background-color: #F2F3F4;">
+        <tr id="tableHeading">
+        </tr>
+    
+        <tbody id="myTable">
+            
+        </tbody>
+      </table>
+    
+    </div>
+
+
+
+    <script>
+
+    </script>
+  </body>
+</html>
