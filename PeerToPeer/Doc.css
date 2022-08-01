@@ -25,6 +25,17 @@
     }
 }
 
+@media only screen and (max-width: 400px){
+    .column{
+        width: 100% !important;
+    }
+}
+@media only screen and (max-width: 400px){
+    .placeHolderText{
+        width: 100px !important;
+    }
+}
+
 .placeHolderText:hover{
     border-color: black !important;
 }
