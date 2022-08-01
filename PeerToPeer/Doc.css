@@ -14,6 +14,16 @@
     font-size: 12px;
     font-family: "Helvetica Neue";
 }
+@media only screen and (max-width: 1075px){
+    .column{
+        width: 100% !important;
+    }
+}
+@media only screen and (max-width: 1075px){
+    .placeHolderText{
+        width: 70% !important;
+    }
+}
 
 .placeHolderText:hover{
     border-color: black !important;
