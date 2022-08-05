@@ -15,28 +15,30 @@
   <body class="container" style="padding-top: 5%;">
 
     <h2 style="color:black">Elrond Apes Blockchain Explorer</h2>
-    <h4>Search wallet addresses to see peer-to-peer transactions</h4>
+    <h4>Search by address to see peer-to-peer transactions <i style="color:black" class="fa fa-exchange"></i></h4>
+    <h6 style="font-size: 16px;">(This explorer looks for the movement of EAPES-8f3c1f NFTs wallet-to-wallet directly before or after the transfer of EGLD <u>not</u> to a Smart Contract)</h6>
+
 
     <hr class="line">
 
     <div class="row">
       <div class="column">
-        <label>Wallet address <i class="fa fa-address-card"></i></label>
+        <label>Wallet address <i style="font-size:18px; color:black" class="fa fa-id-card"></i></label>
         <input type="text" id="myInput" class="placeHolderText" placeholder="Enter an ERD address..." />
       </div>
       <div class="column">
         <br>
-        <button onclick="myFunction()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Search Address <i style="font-size: 12px" class='fa fa-search'></i></button>
+        <button onclick="myFunction()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Search Address <i style="font-size: 14px;" class='fa fa-search'></i></button>
       </div>
       </div>
       <div class="row">
       <div class="column">
-        <label>Get an address from HeroTag <i class="fa fa-bolt"></i></label>
+        <label>Get an address from HeroTag <i style="font-size:18px; color:black" class="fa fa-bolt"></i></label>
         <input type="text" id= "myInput1" class="placeHolderText" placeholder="Enter a HeroTag..." />
       </div>
       <div class="column">
         <br>
-        <button onclick="getHeroTag()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Get HeroTag <i style="font-size: 12px" class='fa fa-search'></i></button>
+        <button onclick="getHeroTag()" class="thisIsButton" style="background-color:black; border-radius: 20px; border-color: black;">Get the HeroTag <i style="font-size: 14px" class='fa fa-search'></i></button>
       </div>
     </div>
 
@@ -46,10 +48,12 @@
 
     <p id="hero" class="centered"></p>
 
+
+
     <script>
       //hero tag function
     function getHeroTag(){
-      document.getElementById("demo1").innerHTML="Processing request <i style='color:black; font-size:20px' class = 'fa fa-refresh fa-spin'></i> Please allow up to 10 seconds per request";  
+      document.getElementById("demo1").innerHTML="Processing request <i style='color:blue; font-size:24px' class = 'fa fa-circle-o-notch fa-spin'></i> Please allow up to 5 seconds per request";  
   
   
       var copyText = document.getElementById("myInput1");
@@ -67,15 +71,25 @@
           document.getElementById("demo1").innerHTML=""; 
         }
         else{
-          document.getElementById("hero").innerHTML=HT+" - Please add copy icon"
+          document.getElementById("hero").innerHTML=copyText.value+"'s address is: "+HT
           document.getElementById("demo1").innerHTML="";  
         }
 
-        
-  
       }
       findHT()
 
+
+    }
+  </script>
+
+  <script>
+    // copy wallet address 
+    function CopyHeroTag(){
+      var copyHT = document.getElementById("hero");
+      copyHT.select();
+      copyHT.setSelectionRange(0, 99999); 
+      navigator.clipboard.writeText(copyHT.value);
+      
     }
   </script>
 
@@ -89,15 +103,16 @@ function myFunction() {
   navigator.clipboard.writeText(copyText.value);
 
   var address = String(copyText.value);
-  console.log(address)
+
 
   if (address.includes('qqqqqq') || !address.includes('erd') ){
     alert("Please only request wallet addresses. Not smart contracts or transaction hashes.")
   }
 
+
   else{
     console.log(`Made with ${'❤️'} by TheChosenOne`)
-    document.getElementById("demo1").innerHTML="Processing request <i style='color:black; font-size:20px' class = 'fa fa-refresh fa-spin'></i> Please allow up to 5 seconds per request";  
+    document.getElementById("demo1").innerHTML="Processing request <i style='color:blue; font-size:24px' class = 'fa fa-circle-o-notch fa-spin'></i> Please allow up to 5 seconds per request";  
 
 
     var table = document.getElementById("myTable");
@@ -116,6 +131,14 @@ function myFunction() {
       const ErdEndpointURL = "https://api.elrond.com/accounts/"+copyText.value+"/transactions?size=1000";
       const responce = await fetch(ErdEndpointURL);
       const data = await responce.json();
+      console.log("api responce: ",responce.status)
+
+      // add a loop for if account doesnt exist
+      if(responce.status!=200){
+        alert("This request failed because this account doesn't exist - Please double check the wallet address and ignore the results from the web page")
+      }
+
+
       var counter = 0;
 
       var emptyTxHashArray = [];
@@ -130,11 +153,13 @@ function myFunction() {
 
       var emptyIdArray = [];
 
+      var emptyWhichArray = []
       
       var theLength = data.length; 
       
 
         while (counter<theLength){
+
 
           var numberOne = data[counter].txHash;
           var numberTwo = data[counter].receiver;
@@ -170,29 +195,156 @@ function myFunction() {
                   var RealSender = data[counter].sender
                   if(!RealRec.includes('qqqqqq') && RealRec!=data[counter].sender){
 
-                    if(RealRec!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4"&&RealSender!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4"){
+                    if(RealRec!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4" && RealSender!="erd1w9mmxz6533m7cf08gehs8phkun2x4e8689ecfk3makk3dgzsgurszhsxk4"){                        
+                        
 
-                    var Identifier = FarthestArg.identifier
-                    emptyIdArray.push(Identifier)
+                        if (data[counter-1].value > 0 || data[counter+1].value > 0){
+
+                          var which = [data[counter-1].value > 0, data[counter+1].value > 0] //.indexOf(true)
+
+                          var whichOne = which.indexOf(true)
+
+                          emptyWhichArray.push(whichOne)
+
+                          console.log('index 0 hash: ',data[counter-1].txHash) // 0 
+                          console.log('index 1 hash: ',data[counter+1].txHash) // 1
+                          console.log(whichOne)
+
+                          if(whichOne===0){
+                            console.log('triggering hash: ',data[counter-1].txHash)
+                            console.log('-------------')
+                            if(!data[counter-1].receiver.includes('qqqqqq')){
+                              console.log('caught, 0 hash')
+                              var Identifier = FarthestArg.identifier
+                              emptyIdArray.push(Identifier)
 
 
-                    console.log("Hash: ",data[counter].txHash)
-                    emptyTxHashArray.push(data[counter].txHash)
+                              emptyTxHashArray.push(data[counter].txHash)
 
-                    console.log("To: ",RealRec)
-                    emptyRecArray.push(RealRec)
-                    
+                              emptyRecArray.push(RealRec)
+                              
 
-                    console.log("From: ",data[counter].sender)
-                    emptySenderArray.push(data[counter].sender)
+                              emptySenderArray.push(data[counter].sender)
 
-                    var TimeStamp = data[counter].timestamp
-                    var newTime = new Date(TimeStamp*1000)
-                    var BestTimeStamp = newTime.toUTCString()
-                    var OfficialDay = BestTimeStamp.slice(5,17)
-                    emptyTimeStampArray.push(OfficialDay)
+                              var TimeStamp = data[counter].timestamp
+                              var newTime = new Date(TimeStamp*1000)
+                              var BestTimeStamp = newTime.toUTCString()
+                              var OfficialDay = BestTimeStamp.slice(5,17)
+                              emptyTimeStampArray.push(OfficialDay)
+                            }
+                          }
+
+                          if(whichOne===1){
+                            console.log('triggering hash: ', data[counter+1].txHash)
+                            console.log('-------------')
+                            if(!data[counter+1].receiver.includes('qqqqqq')){
+                              console.log('caught, 1 hash')
+                              var Identifier = FarthestArg.identifier
+                              emptyIdArray.push(Identifier)
+
+
+                              emptyTxHashArray.push(data[counter].txHash)
+
+                              emptyRecArray.push(RealRec)
+                              
+
+                              emptySenderArray.push(data[counter].sender)
+
+                              var TimeStamp = data[counter].timestamp
+                              var newTime = new Date(TimeStamp*1000)
+                              var BestTimeStamp = newTime.toUTCString()
+                              var OfficialDay = BestTimeStamp.slice(5,17)
+                              emptyTimeStampArray.push(OfficialDay)
+                            }
+                          }
+
+                          //console.log('length: ',which.length)
+                          //console.log(emptyWhichArray)
+
+                          
+                          /*
+                          if(emptyWhichArray.length>0){
+                            var IndexArrayLength = emptyWhichArray.length
+                            console.log('array: ',emptyWhichArray)
+                            //console.log('length: ',IndexArrayLength)
+
+                            for (var aCounter = 0; aCounter < IndexArrayLength; aCounter++) {
+                              var ArrayCounter = emptyWhichArray[aCounter];
+                              console.log('array counter: ',ArrayCounter)
+                              if (ArrayCounter===1){
+                                console.log("ITS 1")
+                                //console.log('triggering hash: ',data[counter+1].txHash)
+                              }
+                              //else{
+                                //console.log('triggering hash: ',data[counter-1].txHash)
+                                //console.log(ArrayCounter)
+                              //}
+                            }
+                          }
+                          */
+                          
+
+                        /*
+                        for(var newestCounter = 0; newestCounter < which.length; newestCounter++){
+
+                          if(whichOne===0){
+                            var YeeYee = data[counter-1].receiver
+                            if (!YeeYee.includes('qqqqqq')){
+                              console.log('YeeYee: ',data[counter-1].txHash)
+                            }
+                          }
+                          else{
+                            var YeeHaw = data[counter+1].receiver
+                            if(!YeeHaw.includes('qqqqqq')){
+                              console.log('YeeHaw: ',data[counter+1].txHash)
+                            }
+                          }
+
+                        }
+                        */
+                        
+                        
+
+
+                        // yo! I var which works, and I NEED to figure out a way to see reciever != 'qqqqq' and which index is which hash 
+
+                        /*
+                        
+                        if (!data[counter-1].receiver.includes('qqqqqq') || !data[counter-2].receiver.includes('qqqqqq') || !data[counter+1].receiver.includes('qqqqqq') || !data[counter+2].receiver.includes('qqqqqq')){
+
+                          var Identifier = FarthestArg.identifier
+                          emptyIdArray.push(Identifier)
+
+
+                          emptyTxHashArray.push(data[counter].txHash)
+
+                          emptyRecArray.push(RealRec)
+                          
+
+                          emptySenderArray.push(data[counter].sender)
+
+                          var TimeStamp = data[counter].timestamp
+                          var newTime = new Date(TimeStamp*1000)
+                          var BestTimeStamp = newTime.toUTCString()
+                          var OfficialDay = BestTimeStamp.slice(5,17)
+                          emptyTimeStampArray.push(OfficialDay)
+
+ 
+
+                        }
+                        */
+
+                        
+
+
+                        
+
 
                     }
+
+                    
+                    }
+                    
 
                   }
 
@@ -201,6 +353,8 @@ function myFunction() {
               }
 
             }
+
+            
     
             counter=counter+1
 
@@ -251,18 +405,18 @@ function myFunction() {
       }
 
       if (emptyIdArray.length>0){
-        document.getElementById("demo1").innerHTML="This account has performed "+emptyIdArray.length+" peer-to-peer transactions <i class='fa fa-close' style='color:red'></i>";  
+        document.getElementById("demo1").innerHTML="This account has performed "+emptyIdArray.length+" peer-to-peer transactions <i class='fa fa-close' style='color:red; font-size:20px'></i>";  
       }
       else{
-        document.getElementById("demo1").innerHTML="This account has performed 0 peer-to-peer transactions <i class='fa fa-check' style='color:green'></i>";  
+        document.getElementById("demo1").innerHTML="This account has performed 0 peer-to-peer transactions <i class='fa fa-check' style='color:green; font-size:20px'></i>";  
       }
 
     }
     FindNftTransfers();
 
   
-    
-  }
+    } // async function
+  
        
 }
 
